@@ -1,0 +1,49 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    volumes:
+      - ~/.pg/pg_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    container_name: postgres_django
+    ports:
+      - "5432:5432"
+#    user: myuser
+  django:
+    container_name: django_movie
+    build: ./movies_admin
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - static:/opt/app/static/
+      - media:/opt/app/media/
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+    command:  uwsgi --ini /opt/app/uwsgi.ini
+#    command: sh -c "python movies_admin/manage.py collectstatic --no-input &&
+#      python movies_admin/manage.py makemigrations &&
+#      python movies_admin/manage.py migrate &&
+#      python movies_admin/manage.py runserver 0.0.0.0:8000"
+#    user: myuser
+  nginx:
+    image: nginx:latest
+    container_name: nginx_movie
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+      - ./movies_admin/static:/usr/share/nginx/html/static/:ro
+      - ./movies_admin/media:/usr/share/nginx/html/media/:ro
+    depends_on:
+      - django
+    ports:
+      - "80:80"
+
+volumes:
+  static:
+  media:
