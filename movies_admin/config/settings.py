@@ -27,17 +27,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'movies.apps.MoviesConfig',
+    'corsheaders',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -117,10 +126,12 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+PAGINATE_BY = os.environ.get('PAGINATE_BY')
+
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
 DEFAULT_CHARSET = 'utf-8'
 
-# LOCALE_PATHS = ["movies/locale"]
+LOCALE_PATHS = ["movies/locale"]
