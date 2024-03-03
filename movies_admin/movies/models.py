@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .mixins import TimeStampedMixin, UUIDMixin
+from .enums import Role, Type
 
 
 class Genre(UUIDMixin, TimeStampedMixin):
@@ -41,9 +42,9 @@ class Person(UUIDMixin, TimeStampedMixin):
 
 
 class Filmwork(UUIDMixin, TimeStampedMixin):
-    class Types(models.TextChoices):
-        MOVIE = "movie", _("movie")
-        TVSHOW = "tv_show", _("tv_show")
+    # class Types(models.TextChoices):
+    #     MOVIE = "movie", _("movie")
+    #     TVSHOW = "tv_show", _("tv_show")
 
     title = models.CharField(_("title"), max_length=255)
     genre = models.ManyToManyField(Genre, through="GenreFilmwork")
@@ -53,7 +54,8 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     rating = models.FloatField(
         _("rating"), blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    type = models.CharField(_("type"), choices=Types.choices, default=Types.MOVIE)
+    type = models.CharField(_("type"), choices=Type.choices, default=Type.movie)
+
 
     class Meta:
         db_table = 'content"."film_work'
@@ -88,14 +90,14 @@ class GenreFilmwork(UUIDMixin):
 
 
 class PersonFilmwork(UUIDMixin):
-    class Role(models.TextChoices):
-        ACTOR = "actor", _("actor")
-        DIRECTOR = "director", _("director")
-        WRITER = "writer", _("writer")
+    # class Role(models.TextChoices):
+    #     ACTOR = "actor", _("actor")
+    #     DIRECTOR = "director", _("director")
+    #     WRITER = "writer", _("writer")
 
     film_work = models.ForeignKey("Filmwork", on_delete=models.CASCADE)
     person = models.ForeignKey("Person", on_delete=models.CASCADE, verbose_name=_("person"))
-    role = models.TextField(_("role"), choices=Role.choices, default=Role.ACTOR)
+    role = models.TextField(_("role"), choices=Role.choices, default=Role.actor)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

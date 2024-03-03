@@ -14,14 +14,14 @@ ENV DJANGO_SETTINGS_MODULE 'config.settings'
 
 
 COPY run_uwsgi.sh /opt/app/run_uwsgi.sh
-COPY requirements.txt requirements.txt
+COPY ../requirements.txt requirements.txt
 COPY uwsgi/uwsgi.ini /opt/app/uwsgi.ini
 
 RUN  pip install --upgrade pip && pip install -r requirements.txt --no-cache-dir
 
 COPY . /opt/app/
-RUN chmod +x run_uwsgi.sh
+
 EXPOSE 8000
 #USER myuser:docker
 
-ENTRYPOINT ["uwsgi", "--strict", "--ini", "uwsgi.ini"]
+CMD ["uwsgi", "--strict", "--ini", "uwsgi.ini"]
